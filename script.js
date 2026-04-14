@@ -1,246 +1,170 @@
-const DEFAULT_FONT_SIZE = 16;
-const MIN_FONT_SIZE = 14;
-const MAX_FONT_SIZE = 20;
-let currentFontSize = DEFAULT_FONT_SIZE;
+// ===========================
+// DADOS DINÂMICOS
+// ===========================
 
-const applyFontSize = () => {
-  document.documentElement.style.fontSize = `${currentFontSize}px`;
-};
-
-const increaseFont = () => {
-  currentFontSize = Math.min(MAX_FONT_SIZE, currentFontSize + 2);
-  applyFontSize();
-};
-
-const decreaseFont = () => {
-  currentFontSize = Math.max(MIN_FONT_SIZE, currentFontSize - 2);
-  applyFontSize();
-};
-
-const toggleContrast = () => {
-  document.body.classList.toggle('high-contrast');
-};
-
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
-const accessibilityBtn = document.getElementById('accessibility-btn');
-const accessibilityMenu = document.getElementById('accessibility-menu');
-const revealElements = document.querySelectorAll('.reveal');
-const dots = document.querySelectorAll('.dot');
-const navMore = document.querySelector('.nav-more');
-const navMoreBtn = document.getElementById('nav-more-btn');
-
-if (hamburger && navLinks) {
-  hamburger.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('show');
-    hamburger.setAttribute('aria-expanded', String(isOpen));
-  });
-
-  navLinks.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('show');
-      hamburger.setAttribute('aria-expanded', 'false');
-    });
-  });
-}
-
-if (navMore && navMoreBtn) {
-  navMoreBtn.addEventListener('click', () => {
-    const isOpen = navMore.classList.toggle('open');
-    navMoreBtn.setAttribute('aria-expanded', String(isOpen));
-  });
-
-  navMore.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      navMore.classList.remove('open');
-      navMoreBtn.setAttribute('aria-expanded', 'false');
-    });
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!navMore.contains(event.target)) {
-      navMore.classList.remove('open');
-      navMoreBtn.setAttribute('aria-expanded', 'false');
+// Dados dos cards de impactos
+const impactos = [
+    {
+        titulo: "Perda de Biodiversidade",
+        descricao: "O desmatamento destrói habitats naturais, ameaçando inúmeras espécies de animais e plantas."
+    },
+    {
+        titulo: "Mudanças Climáticas",
+        descricao: "A redução das florestas aumenta a emissão de CO₂ e contribui para o aquecimento global."
+    },
+    {
+        titulo: "Erosão do Solo",
+        descricao: "Sem árvores, o solo fica exposto, aumentando a erosão e a desertificação."
     }
-  });
-}
-
-if (accessibilityBtn && accessibilityMenu) {
-  accessibilityBtn.addEventListener('click', () => {
-    const isHidden = accessibilityMenu.classList.toggle('hidden');
-    accessibilityBtn.setAttribute('aria-expanded', String(!isHidden));
-  });
-}
-
-function revealOnScroll() {
-  const windowHeight = window.innerHeight;
-  revealElements.forEach((el) => {
-    const elementTop = el.getBoundingClientRect().top;
-    if (elementTop < windowHeight - 60) {
-      el.classList.add('visible');
-    }
-  });
-}
-
-window.addEventListener('scroll', revealOnScroll);
-window.addEventListener('load', revealOnScroll);
-
-const carouselItems = [
-  {
-    src: './img/campo.png',
-    alt: 'Campo de cevada em Guarapuava',
-    title: 'Campo de cevada',
-    description: 'O início da jornada acontece no campo, onde o cultivo da cevada depende de planejamento, clima favorável e cuidado com os recursos naturais.'
-  },
-  {
-    src: './img/malte.png',
-    alt: 'Malte em processo de beneficiamento',
-    title: 'Transformação em malte',
-    description: 'Após a colheita, a cevada passa por etapas de beneficiamento e transformação, unindo produção agrícola, tecnologia e indústria.'
-  },
-  {
-    src: './img/cidade.png',
-    alt: 'Cidade conectada à cadeia produtiva do malte',
-    title: 'Campo e cidade conectados',
-    description: 'O produto final chega à cidade e mostra como o agro movimenta a economia, abastece o cotidiano e depende de um futuro sustentável.'
-  }
 ];
 
-let currentIndex = 0;
-let autoSlide;
-
-function updateDots() {
-  dots.forEach((dot, index) => {
-    dot.classList.toggle('active', index === currentIndex);
-  });
-}
-
-function updateCarousel() {
-  const item = carouselItems[currentIndex];
-  const img = document.getElementById('carousel-image');
-  const title = document.getElementById('carousel-title');
-  const description = document.getElementById('carousel-description');
-
-  if (!img || !title || !description) return;
-
-  img.src = item.src;
-  img.alt = item.alt;
-  title.textContent = item.title;
-  description.textContent = item.description;
-  updateDots();
-}
-
-function changeSlide(direction) {
-  currentIndex = (currentIndex + direction + carouselItems.length) % carouselItems.length;
-  updateCarousel();
-}
-
-function goToSlide(index) {
-  currentIndex = index;
-  updateCarousel();
-}
-
-function startAutoSlide() {
-  autoSlide = setInterval(() => {
-    changeSlide(1);
-  }, 5000);
-}
-
-function stopAutoSlide() {
-  clearInterval(autoSlide);
-}
-
-dots.forEach((dot) => {
-  dot.addEventListener('click', () => {
-    goToSlide(Number(dot.dataset.index));
-    stopAutoSlide();
-    startAutoSlide();
-  });
-});
-
-const facts = [
-  'A cevada é um dos grãos cultivados há mais tempo pela humanidade e segue tendo grande importância econômica e alimentar.',
-  'O malte não está presente apenas em bebidas: ele também pode ser utilizado em diferentes alimentos.',
-  'A força do agro também depende do cuidado com o solo, a água e os demais recursos naturais.',
-  'Produção e meio ambiente precisam caminhar juntos para garantir um futuro realmente sustentável.'
+// Dados do carrossel (galeria)
+const galerias = [
+    { imagem: "https://source.unsplash.com/800x400/?forest", alt: "Floresta Verde" },
+    { imagem: "https://source.unsplash.com/800x400/?deforestation", alt: "Desmatamento" },
+    { imagem: "https://source.unsplash.com/800x400/?tree", alt: "Árvores" }
 ];
 
-const factText = document.getElementById('fact-text');
-const factBtn = document.getElementById('fact-btn');
-let currentFactIndex = 0;
+// Dados do FAQ (acordeão)
+const faqs = [
+    { pergunta: "O que é desmatamento?", resposta: "Desmatamento é a remoção total ou parcial de vegetação nativa de uma área." },
+    { pergunta: "Quais os principais impactos?", resposta: "Impactos incluem perda de biodiversidade, mudanças climáticas e erosão do solo." },
+    { pergunta: "Como podemos ajudar?", resposta: "Apoiar reflorestamento, reduzir consumo de produtos ligados ao desmatamento e conscientizar outros." }
+];
 
-if (factBtn && factText) {
-  factBtn.addEventListener('click', () => {
-    let nextIndex;
+// ===========================
+// FUNÇÃO DE RENDERIZAÇÃO
+// ===========================
 
-    do {
-      nextIndex = Math.floor(Math.random() * facts.length);
-    } while (nextIndex === currentFactIndex && facts.length > 1);
-
-    currentFactIndex = nextIndex;
-    factText.textContent = facts[currentFactIndex];
-  });
-}
-
-const quizForm = document.getElementById('quiz-form');
-const quizResult = document.getElementById('quiz-result');
-
-if (quizForm && quizResult) {
-  quizForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const answers = ['q1', 'q2', 'q3', 'q4', 'q5'];
-    let score = 0;
-    let allAnswered = true;
-
-    answers.forEach((question) => {
-      const selected = document.querySelector(`input[name="${question}"]:checked`);
-
-      if (!selected) {
-        allAnswered = false;
-        return;
-      }
-
-      if (selected.value === 'certo') {
-        score += 1;
-      }
+// Renderizar cards de impactos
+function renderImpactos() {
+    const container = document.getElementById('impact-cards');
+    impactos.forEach(impacto => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = `<h3>${impacto.titulo}</h3><p>${impacto.descricao}</p>`;
+        container.appendChild(card);
     });
-
-    if (!allAnswered) {
-      quizResult.textContent = 'Responda todas as perguntas para ver o resultado.';
-      quizResult.classList.add('show');
-      return;
-    }
-
-    const feedbacks = {
-      5: 'Parabéns! Você acertou tudo e compreendeu muito bem a relação entre cevada, malte, campo, cidade e sustentabilidade.',
-      4: 'Excelente! Você acertou 4 de 5 perguntas e demonstrou ótima compreensão do tema.',
-      3: 'Muito bom! Você acertou 3 de 5 perguntas e já domina boa parte do conteúdo.',
-      2: 'Você acertou 2 de 5 perguntas. Vale revisar o conteúdo e tentar novamente.',
-      1: 'Você acertou 1 de 5 perguntas. Explore o site novamente e tente mais uma vez.',
-      0: 'Você ainda não acertou nenhuma. Explore o site novamente e faça uma nova tentativa.'
-    };
-
-    quizResult.textContent = `Resultado: ${score}/5. ${feedbacks[score]}`;
-    quizResult.classList.add('show');
-  });
 }
 
-const cardToggles = document.querySelectorAll('.card-toggle');
+// Renderizar carrossel
+function renderGaleria() {
+    const track = document.querySelector('.carousel-track');
+    galerias.forEach(item => {
+        const slide = document.createElement('div');
+        slide.classList.add('carousel-slide');
+        slide.innerHTML = `<img src="${item.imagem}" alt="${item.alt}">`;
+        track.appendChild(slide);
+    });
+}
 
-cardToggles.forEach((toggle) => {
-  toggle.addEventListener('click', () => {
-    const card = toggle.closest('.expandable-card');
-    const isOpen = card.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(isOpen));
-    toggle.querySelector('.card-icon').textContent = isOpen ? '−' : '+';
-  });
+// Renderizar FAQ
+function renderFAQ() {
+    const container = document.getElementById('faq-container');
+    faqs.forEach((faq, index) => {
+        const item = document.createElement('div');
+        item.classList.add('accordion-item');
+        item.innerHTML = `
+            <button class="accordion-header" aria-expanded="false" aria-controls="faq${index}">${faq.pergunta}</button>
+            <div class="accordion-content" id="faq${index}"><p>${faq.resposta}</p></div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// ===========================
+// ACESSIBILIDADE
+// ===========================
+
+// Alternar alto contraste
+document.getElementById('contrast-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('high-contrast');
 });
 
-const carouselWrapper = document.querySelector('.carousel-wrapper');
-if (carouselWrapper) {
-  carouselWrapper.addEventListener('mouseenter', stopAutoSlide);
-  carouselWrapper.addEventListener('mouseleave', startAutoSlide);
+// Ajustar tamanho da fonte
+function ajustarFonte(delta) {
+    const html = document.documentElement;
+    const current = parseFloat(getComputedStyle(html).fontSize);
+    html.style.fontSize = `${current + delta}px`;
 }
 
-updateCarousel();
+document.getElementById('increase-font').addEventListener('click', () => ajustarFonte(2));
+document.getElementById('decrease-font').addEventListener('click', () => ajustarFonte(-2));
+
+// ===========================
+// ACORDEÃO (FAQ)
+// ===========================
+function setupAccordion() {
+    const headers = document.querySelectorAll('.accordion-header');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const expanded = header.getAttribute('aria-expanded') === 'true';
+            header.setAttribute('aria-expanded', !expanded);
+            const content = header.nextElementSibling;
+            if (!expanded) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            } else {
+                content.style.maxHeight = null;
+            }
+        });
+    });
+}
+
+// ===========================
+// CARROSSEL
+// ===========================
+function setupCarousel() {
+    const track = document.querySelector('.carousel-track');
+    const slides = Array.from(track.children);
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+    let index = 0;
+
+    function updateCarousel() {
+        const width = slides[0].getBoundingClientRect().width;
+        track.style.transform = `translateX(-${index * width}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        index = (index - 1 + slides.length) % slides.length;
+        updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        index = (index + 1) % slides.length;
+        updateCarousel();
+    });
+
+    // Responsivo
+    window.addEventListener('resize', updateCarousel);
+}
+
+// ===========================
+// SCROLL REVEAL SIMPLES
+// ===========================
+function scrollReveal() {
+    const sections = document.querySelectorAll('main section');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    sections.forEach(section => observer.observe(section));
+}
+
+// ===========================
+// INICIALIZAÇÃO
+// ===========================
+function init() {
+    renderImpactos();
+    renderGaleria();
+    renderFAQ();
+    setupAccordion();
+    setupCarousel();
+    scrollReveal();
+}
+
+document.addEventListener('DOMContentLoaded', init);
